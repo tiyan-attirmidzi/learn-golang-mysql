@@ -42,7 +42,9 @@ func (bookHandler *bookHandler) Show(ctx *gin.Context) {
 	book, err := bookHandler.bookService.FindByID(id)
 
 	if err != nil {
-		fmt.Println(err)
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err,
+		})
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
