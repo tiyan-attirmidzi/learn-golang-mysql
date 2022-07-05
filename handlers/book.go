@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"api.pustaka/book"
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,25 @@ func (bookHandler *bookHandler) Index(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Books Retrived Successfully",
 		"data":    books,
+	})
+
+}
+
+func (bookHandler *bookHandler) Show(ctx *gin.Context) {
+
+	// TODO: Add Error Handling
+
+	id, _ := strconv.Atoi(ctx.Param("id"))
+
+	book, err := bookHandler.bookService.FindByID(id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Books Retrived Successfully",
+		"data":    book,
 	})
 
 }
