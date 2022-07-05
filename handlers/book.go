@@ -23,12 +23,28 @@ func (h *bookHandler) Index(ctx *gin.Context) {
 	books, err := h.bookService.FindAll()
 
 	if err != nil {
-		fmt.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	var booksResponse []book.BookResponse
+
+	for _, b := range books {
+		bookResponse := book.BookResponse{
+			ID:          b.ID,
+			Title:       b.Title,
+			Description: b.Description,
+			Price:       b.Price,
+			Rating:      b.Rating,
+		}
+		booksResponse = append(booksResponse, bookResponse)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Books Retrived Successfully",
-		"data":    books,
+		"data":    booksResponse,
 	})
 
 }
@@ -42,7 +58,7 @@ func (h *bookHandler) Show(ctx *gin.Context) {
 	book, err := h.bookService.FindByID(id)
 
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
 	}
