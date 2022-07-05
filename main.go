@@ -23,15 +23,18 @@ func main() {
 	db.AutoMigrate(&book.Book{})
 
 	bookRepository := book.NewRepository(db)
+	bookService := book.NewService(bookRepository)
+	bookHandler := handlers.NewBookHandler(bookService)
 
-	book := book.Book{
-		Title:       "Golang Fundamental",
-		Price:       180000,
-		Rating:      4,
-		Description: "Golang is Fast Language",
-	}
+	// bookRequest := book.BookRequest{
+	// 	Title: "Golang Fundamental",
+	// 	Price: "180000",
+	// 	// Rating:      4,
+	// 	// Description: "Golang is Fast Language",
+	// }
 
-	bookRepository.Store(book)
+	// // bookRepository.Store(book)
+	// bookService.Store(bookRequest)
 
 	// Create
 
@@ -123,11 +126,11 @@ func main() {
 		})
 	})
 
-	v1.GET("/books", handlers.ExampleGetBookWithQueryParams)
+	v1.GET("/books", bookHandler.Index)
 	v1.GET("/books/:id", handlers.ExampleGetBookWithPathVariable)
 	v1.POST("/books", handlers.ExamplePostBook)
 	// v1.POST("/tests", handlers.Store)
 
-	router.Run()
+	router.Run(":8000")
 
 }

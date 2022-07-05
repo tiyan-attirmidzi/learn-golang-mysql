@@ -9,8 +9,31 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type bookHandler struct {
+	bookService book.Service
+}
+
+func NewBookHandler(bookService book.Service) *bookHandler {
+	return &bookHandler{bookService}
+}
+
+func (bookHandler *bookHandler) Index(ctx *gin.Context) {
+
+	books, err := bookHandler.bookService.FindAll()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Books Retrived Successfully",
+		"data":    books,
+	})
+
+}
+
 // with Query Params
-func ExampleGetBookWithQueryParams(ctx *gin.Context) {
+func (bookHandler *bookHandler) ExampleGetBookWithQueryParams(ctx *gin.Context) {
 
 	name := ctx.Query("name")
 
@@ -41,7 +64,7 @@ func ExampleGetBookWithPathVariable(ctx *gin.Context) {
 
 func ExamplePostBook(ctx *gin.Context) {
 
-	var productInput book.ProductInput
+	var productInput book.BookRequest
 
 	err := ctx.ShouldBindJSON(&productInput)
 
