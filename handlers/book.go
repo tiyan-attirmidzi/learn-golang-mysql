@@ -62,3 +62,18 @@ func ExamplePostBook(ctx *gin.Context) {
 		"data":    productInput,
 	})
 }
+
+// func Store(ctx *gin.Context) {
+
+// 	var book book.Book
+
+// 	err := ctx.ShouldBindJSON(&book)
+
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	err = db.
+// 	fmt.Println(book)
+
+// }
