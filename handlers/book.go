@@ -99,60 +99,6 @@ func (h *bookHandler) Store(ctx *gin.Context) {
 
 }
 
-// with Query Params
-func (h *bookHandler) ExampleGetBookWithQueryParams(ctx *gin.Context) {
-
-	name := ctx.Query("name")
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Products Retrived Successfully",
-		"data": map[string]interface{}{
-			"id":    4,
-			"name":  name,
-			"price": 20000,
-		},
-	})
-}
-
-// with Path Variable
-func ExampleGetBookWithPathVariable(ctx *gin.Context) {
-
-	id := ctx.Param("id")
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Product Retrived Successfully",
-		"data": map[string]interface{}{
-			"id":    id,
-			"name":  "Rokok Surya 12",
-			"price": 20000,
-		},
-	})
-}
-
-func ExamplePostBook(ctx *gin.Context) {
-
-	var productInput book.BookRequest
-
-	err := ctx.ShouldBindJSON(&productInput)
-
-	if err != nil {
-		errorMessages := []string{}
-		for _, e := range err.(validator.ValidationErrors) {
-			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
-			errorMessages = append(errorMessages, errorMessage)
-		}
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": errorMessages,
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Product Stored Successfully",
-		"data":    productInput,
-	})
-}
-
 func convertToBookResponse(b book.Book) book.BookResponse {
 	return book.BookResponse{
 		ID:          b.ID,
