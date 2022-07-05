@@ -18,9 +18,9 @@ func NewBookHandler(bookService book.Service) *bookHandler {
 	return &bookHandler{bookService}
 }
 
-func (bookHandler *bookHandler) Index(ctx *gin.Context) {
+func (h *bookHandler) Index(ctx *gin.Context) {
 
-	books, err := bookHandler.bookService.FindAll()
+	books, err := h.bookService.FindAll()
 
 	if err != nil {
 		fmt.Println(err)
@@ -33,13 +33,13 @@ func (bookHandler *bookHandler) Index(ctx *gin.Context) {
 
 }
 
-func (bookHandler *bookHandler) Show(ctx *gin.Context) {
+func (h *bookHandler) Show(ctx *gin.Context) {
 
 	// TODO: Add Error Handling
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
-	book, err := bookHandler.bookService.FindByID(id)
+	book, err := h.bookService.FindByID(id)
 
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -54,8 +54,41 @@ func (bookHandler *bookHandler) Show(ctx *gin.Context) {
 
 }
 
+func (h *bookHandler) Store(ctx *gin.Context) {
+
+	var bookInput book.BookRequest
+
+	err := ctx.ShouldBindJSON(&bookInput)
+
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errorMessages,
+		})
+		return
+	}
+
+	book, err := h.bookService.Store(bookInput)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product Stored Successfully",
+		"data":    book,
+	})
+
+}
+
 // with Query Params
-func (bookHandler *bookHandler) ExampleGetBookWithQueryParams(ctx *gin.Context) {
+func (h *bookHandler) ExampleGetBookWithQueryParams(ctx *gin.Context) {
 
 	name := ctx.Query("name")
 

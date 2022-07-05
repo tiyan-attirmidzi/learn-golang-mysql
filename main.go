@@ -128,7 +128,7 @@ func main() {
 
 	v1.GET("/books", bookHandler.Index)
 	v1.GET("/books/:id", bookHandler.Show)
-	v1.POST("/books", handlers.ExamplePostBook)
+	v1.POST("/books", bookHandler.Store)
 
 	router.Run(":8000")
 
