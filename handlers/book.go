@@ -32,13 +32,7 @@ func (h *bookHandler) Index(ctx *gin.Context) {
 	var booksResponse []book.BookResponse
 
 	for _, b := range books {
-		bookResponse := book.BookResponse{
-			ID:          b.ID,
-			Title:       b.Title,
-			Description: b.Description,
-			Price:       b.Price,
-			Rating:      b.Rating,
-		}
+		bookResponse := convertToBookResponse(b)
 		booksResponse = append(booksResponse, bookResponse)
 	}
 
@@ -51,11 +45,11 @@ func (h *bookHandler) Index(ctx *gin.Context) {
 
 func (h *bookHandler) Show(ctx *gin.Context) {
 
-	// TODO: Add Error Handling
+	// TODO: Create Error Handling (if id dont exist on db, accepted and data value is null)
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
-	book, err := h.bookService.FindByID(id)
+	b, err := h.bookService.FindByID(id)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -63,9 +57,11 @@ func (h *bookHandler) Show(ctx *gin.Context) {
 		})
 	}
 
+	bookResponse := convertToBookResponse(b)
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Books Retrived Successfully",
-		"data":    book,
+		"message": "Book Retrived Successfully",
+		"data":    bookResponse,
 	})
 
 }
@@ -157,17 +153,11 @@ func ExamplePostBook(ctx *gin.Context) {
 	})
 }
 
-// func Store(ctx *gin.Context) {
-
-// 	var book book.Book
-
-// 	err := ctx.ShouldBindJSON(&book)
-
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	err = db.
-// 	fmt.Println(book)
-
-// }
+func convertToBookResponse(b book.Book) book.BookResponse {
+	return book.BookResponse{
+		ID:          b.ID,
+		Title:       b.Title,
+		Description: b.Description,
+		Price:       b.Price,
+	}
+}
