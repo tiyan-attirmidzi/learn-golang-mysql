@@ -139,6 +139,31 @@ func (h *bookHandler) Update(ctx *gin.Context) {
 
 }
 
+func (h *bookHandler) Destroy(ctx *gin.Context) {
+
+	id, err := strconv.Atoi(ctx.Param("id"))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Path Variable not found",
+		})
+	}
+
+	book, err := h.bookService.Destroy(id)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product Updated Successfully",
+		"data":    convertToBookResponse(book),
+	})
+
+}
+
 func convertToBookResponse(b book.Book) book.BookResponse {
 	return book.BookResponse{
 		ID:          b.ID,
