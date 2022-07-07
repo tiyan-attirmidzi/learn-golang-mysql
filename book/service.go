@@ -3,7 +3,8 @@ package book
 type Service interface {
 	FindAll() ([]Book, error)
 	FindByID(ID int) (Book, error)
-	Store(bookRequest BookRequest) (Book, error)
+	Store(bookRequestStore BookRequestStore) (Book, error)
+	Update(ID int, bookRequestUpdate BookRequestUpdate) (Book, error)
 }
 
 type service struct {
@@ -25,13 +26,13 @@ func (s *service) FindByID(ID int) (Book, error) {
 	return book, err
 }
 
-func (s *service) Store(bookRequest BookRequest) (Book, error) {
-	price, _ := bookRequest.Price.Int64()
-	rating, _ := bookRequest.Rating.Int64()
+func (s *service) Store(bookRequestStore BookRequestStore) (Book, error) {
+	price, _ := bookRequestStore.Price.Int64()
+	rating, _ := bookRequestStore.Rating.Int64()
 
 	book := Book{
-		Title:       bookRequest.Title,
-		Description: bookRequest.Description,
+		Title:       bookRequestStore.Title,
+		Description: bookRequestStore.Description,
 		Price:       int(price),
 		Rating:      int(rating),
 	}
@@ -40,4 +41,21 @@ func (s *service) Store(bookRequest BookRequest) (Book, error) {
 
 	return newBook, err
 
+}
+
+func (s *service) Update(ID int, BookRequestUpdate BookRequestUpdate) (Book, error) {
+
+	book, _ := s.repository.FindByID(ID)
+
+	price, _ := BookRequestUpdate.Price.Int64()
+	rating, _ := BookRequestUpdate.Rating.Int64()
+
+	book.Title = BookRequestUpdate.Title
+	book.Description = BookRequestUpdate.Description
+	book.Price = int(price)
+	book.Rating = int(rating)
+
+	updateBook, err := s.repository.Update(book)
+
+	return updateBook, err
 }

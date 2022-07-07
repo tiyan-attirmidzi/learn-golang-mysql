@@ -45,6 +45,7 @@ func main() {
 	v1.GET("/books", bookHandler.Index)
 	v1.GET("/books/:id", bookHandler.Show)
 	v1.POST("/books", bookHandler.Store)
+	v1.PATCH("/books/:id", bookHandler.Update)
 
 	router.Run()
 

@@ -68,7 +68,7 @@ func (h *bookHandler) Show(ctx *gin.Context) {
 
 func (h *bookHandler) Store(ctx *gin.Context) {
 
-	var bookInput book.BookRequest
+	var bookInput book.BookRequestStore
 
 	err := ctx.ShouldBindJSON(&bookInput)
 
@@ -94,7 +94,47 @@ func (h *bookHandler) Store(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Product Stored Successfully",
-		"data":    book,
+		"data":    convertToBookResponse(book),
+	})
+
+}
+
+func (h *bookHandler) Update(ctx *gin.Context) {
+
+	var bookInput book.BookRequestUpdate
+
+	id, err := strconv.Atoi(ctx.Param("id"))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Path Variable not found",
+		})
+	}
+
+	err = ctx.ShouldBindJSON(&bookInput)
+
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": errorMessages,
+		})
+	}
+
+	book, err := h.bookService.Update(id, bookInput)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product Updated Successfully",
+		"data":    convertToBookResponse(book),
 	})
 
 }
